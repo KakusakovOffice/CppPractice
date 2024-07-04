@@ -13,10 +13,10 @@ using namespace System::IO;
 struct order
 {
 	char address[20];  // Адрес заказа.
-	char kind[20];  // Тип продукта.
-	char date[11];  // Дата поступления заказа.
-	long weight;  // Вес заказа.
-	long price;  // Цена заказа.
+	char kind[20];     // Тип продукта.
+	char date[11];     // Дата поступления заказа.
+	long weight;       // Вес заказа.
+	long price;        // Цена заказа.
 };
 
 // Двусторонний связный список, хранящий 
@@ -24,9 +24,9 @@ struct order
 // заказов определенного типа.
 struct list
 {
-	char kind[20];  // Тип продукта
-	long count;  // Количество заказов с продуктом.
-	long price;  // Суммарная цена заказов.
+	char kind[20];      // Тип продукта
+	long count;         // Количество заказов с продуктом.
+	long price;         // Суммарная цена заказов.
 	struct list* next;  // Следующий узел списка.
 	struct list* prev;  // Предыдущий узел списказ.
 };
@@ -34,7 +34,7 @@ struct list
 // Динамический массив данных типа struct order.
 struct orders
 {
-	unsigned int count;  // Количество заказов еды.
+	unsigned int count;    // Количество заказов еды.
 	struct order* values;  // Массив заказов еды.
 };
 
