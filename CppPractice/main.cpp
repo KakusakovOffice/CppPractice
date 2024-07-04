@@ -589,6 +589,7 @@ int main(array<System::String^>^ args)
 
 	orders.values = (struct order*)malloc(sizeof(struct order) * orders.count);
 	if (orders.values == NULL) abort();
+	FILE* output = fopen("output.dat", "w");
 	struct list* sp = NULL;  // Список заказов еды по типу.
 	for (unsigned int i = 0; i < orders.count; i++)
 	{
@@ -617,6 +618,18 @@ int main(array<System::String^>^ args)
 			);
 			(void)_getch();
 			exit(EXIT_FAILURE);
+		}
+		if (output)
+		{
+			fprintf(
+				output,
+				"%-20s %-20s %-11s %6ld %6ld\n",
+				orders.values[i].address,
+				orders.values[i].kind,
+				orders.values[i].date,
+				orders.values[i].weight,
+				orders.values[i].price
+			);
 		}
 		insert_order(&sp, orders.values[i]);
 	}
