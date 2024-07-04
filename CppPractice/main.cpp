@@ -48,7 +48,7 @@ struct orders
 // Описание:
 // Печатает в консоль (переписывает весь экран)
 // данные массива orders.
-void print_orders(struct orders orders)
+static void print_orders(struct orders orders)
 {
 	Console::ForegroundColor = ConsoleColor::White;
 	Console::BackgroundColor = ConsoleColor::Black;
@@ -70,7 +70,7 @@ void print_orders(struct orders orders)
 // Описание:
 // Печатает в консоль (после курсора)
 // заказ с наибольшей ценой.
-void print_most_expensive_order(struct orders orders)
+static void print_most_expensive_order(struct orders orders)
 {
 	struct order* best = &orders.values[0];
 	for (unsigned int i = 1; i < orders.count; i++)
@@ -106,7 +106,7 @@ void print_most_expensive_order(struct orders orders)
 //         строку (11 симв. включая нуль),
 //         в которой содержится дата в 
 //         изначальном формате.
-void to_pretty_date(char* to, const char* from)
+static void to_pretty_date(char* to, const char* from)
 {
 	char tmp[3];
 	const char* months[] = {
@@ -128,7 +128,7 @@ void to_pretty_date(char* to, const char* from)
 //
 // Если заказов с такой датой несколько, 
 // то печатает любой из них.
-void last_order(struct orders orders)
+static void last_order(struct orders orders)
 {
 	struct order* best = &orders.values[0];
 	for (unsigned int i = 0; i < orders.count; i++)
@@ -159,7 +159,7 @@ void last_order(struct orders orders)
 // Описание:
 // Печатает в консоль (после курсора)
 // количество заказов пиццы.
-void print_pizza_order_count(struct orders orders)
+static void print_pizza_order_count(struct orders orders)
 {
 	unsigned int total = 0;
 	for (unsigned int i = 0; i < orders.count; i++)
@@ -187,7 +187,7 @@ void print_pizza_order_count(struct orders orders)
 // Возвращает:
 // Новый узел списка. Чтобы освободить память
 // можно использовать free().
-struct list* create_list_node(struct order order)
+static struct list* create_list_node(struct order order)
 {
 	struct list* node = (struct list*)malloc(sizeof(struct list));
 	if (!node) abort();
@@ -211,7 +211,7 @@ struct list* create_list_node(struct order order)
 //
 // Аргументы:
 // order -> Заказ, который будет добавлен в список sp.
-void insert_order(struct list** sp, struct order order)
+static void insert_order(struct list** sp, struct order order)
 {
 	if (!*sp)
 	{
@@ -256,7 +256,7 @@ void insert_order(struct list** sp, struct order order)
 // Печатает в консоль (переписывает весь экран)
 // данные списка sp в алфавитном порядке 
 // (сортировка идет по типу заказа).
-void list_alpha(struct list* sp)
+static void list_alpha(struct list* sp)
 {
 	Console::ForegroundColor = ConsoleColor::Black;
 	Console::BackgroundColor = ConsoleColor::Gray;
@@ -281,7 +281,7 @@ void list_alpha(struct list* sp)
 // Печатает в консоль (переписывает весь экран)
 // данные списка sp в обратном алфавитном порядке
 // (сортировка идет по типу заказа).
-void list_alpha_reverse(struct list* sp)
+static void list_alpha_reverse(struct list* sp)
 {
 	Console::ForegroundColor = ConsoleColor::Black;
 	Console::BackgroundColor = ConsoleColor::Gray;
@@ -308,7 +308,7 @@ void list_alpha_reverse(struct list* sp)
 // Печатает в консоль (переписывает весь экран)
 // список заказов из массива orders, цена 
 // которых превышает 1000.
-void print_expensive_list(struct orders orders)
+static void print_expensive_list(struct orders orders)
 {
 	Console::ForegroundColor = ConsoleColor::Black;
 	Console::BackgroundColor = ConsoleColor::Gray;
@@ -337,7 +337,7 @@ void print_expensive_list(struct orders orders)
 // Печатает в консоль (переписывает весь экран)
 // диаграмму по наиболее дорогим заказам,
 // основанную на данных списка sp.
-void diagram(struct orders orders, struct list* sp)
+static void diagram(struct orders orders, struct list* sp)
 {
 	Console::BackgroundColor = ConsoleColor::Yellow;
 	Console::Clear();
@@ -375,7 +375,7 @@ void diagram(struct orders orders, struct list* sp)
 // первое совпадение цен заказа для
 // двух заказов из массива orders с 
 // разными типами.
-void match_one(struct orders orders)
+static void match_one(struct orders orders)
 {
 	Console::ForegroundColor = ConsoleColor::Yellow;
 	Console::BackgroundColor = ConsoleColor::Black;
@@ -415,7 +415,7 @@ finish:
 // все совпадения цен заказа для
 // двух заказов из массива orders с 
 // разными типами.
-void match(struct orders orders)
+static void match(struct orders orders)
 {
 	Console::ForegroundColor = ConsoleColor::Black;
 	Console::BackgroundColor = ConsoleColor::Gray;
@@ -439,7 +439,7 @@ void match(struct orders orders)
 // Отрисовывает меню и позволяет выбрать 
 // одну из функций приложения при помощи
 // клавиатуры.
-void menu(struct orders orders, struct list* sp)
+static void menu(struct orders orders, struct list* sp)
 {
 	const char* options[] = {
 		"                                      ",
@@ -520,7 +520,7 @@ void menu(struct orders orders, struct list* sp)
 }
 
 // Функция-помошник, чтобы удобно создавать файл с данными.
-void make_file(const char* path)
+static void make_file(const char* path)
 {
 	FILE* file = fopen(path, "w");
 	if (fprintf(
