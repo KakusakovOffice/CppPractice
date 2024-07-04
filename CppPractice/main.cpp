@@ -621,5 +621,5 @@ int main(array<System::String^>^ args)
 		insert_order(&sp, orders.values[i]);
 	}
 
-	while (1) menu(orders, sp);
+	while (true) menu(orders, sp);
 }
