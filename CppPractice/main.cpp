@@ -38,13 +38,6 @@ struct orders
 	struct order* values;  // Массив заказов еды.
 };
 
-#define ENTER 13
-#define ESC   27
-#define UP    72
-#define DOWN  80
-#define HOME  71
-#define END   79
-
 // Описание:
 // Печатает в консоль (переписывает весь экран)
 // данные массива orders.
@@ -475,6 +468,14 @@ static void menu(struct orders orders, struct list* sp)
 	int y = 1;
 	int last_y = y;
 
+
+	const int enter = 13;
+	const int esc   = 27;
+	const int up    = 72;
+	const int down  = 80;
+	const int home  = 71;
+	const int end   = 79;
+
 	while (1)
 	{
 		Console::ForegroundColor = ConsoleColor::Black;
@@ -492,11 +493,11 @@ static void menu(struct orders orders, struct list* sp)
 		last_y = y;
 		switch (_getch())
 		{
-		case DOWN:  y++; break;
-		case UP:    y--; break;
-		case HOME:  y = first_option; break;
-		case END:   y = last_option; break;
-		case ENTER:
+		case down:  y++; break;
+		case up:    y--; break;
+		case home:  y = first_option; break;
+		case end:   y = last_option; break;
+		case enter:
 			switch (y)
 			{
 			case 1: print_most_expensive_order(orders); return;
@@ -511,7 +512,7 @@ static void menu(struct orders orders, struct list* sp)
 			case 10: print_orders(orders);              return;
 			case 11: exit(0);
 			}
-		case ESC:    exit(0);
+		case esc:    exit(0);
 		}
 
 		if (y > last_option) y = first_option;
