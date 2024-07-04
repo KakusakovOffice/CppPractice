@@ -13,10 +13,10 @@ using namespace System::IO;
 struct order
 {
 	char address[20];  // Адрес заказа.
-	char kind[20];  // Тип продукта.
-	char date[11];  // Дата поступления заказа.
-	long weight;  // Вес заказа.
-	long price;  // Цена заказа.
+	char kind[20];     // Тип продукта.
+	char date[11];     // Дата поступления заказа.
+	long weight;       // Вес заказа.
+	long price;        // Цена заказа.
 };
 
 // Двусторонний связный список, хранящий 
@@ -24,9 +24,9 @@ struct order
 // заказов определенного типа.
 struct list
 {
-	char kind[20];  // Тип продукта
-	long count;  // Количество заказов с продуктом.
-	long price;  // Суммарная цена заказов.
+	char kind[20];      // Тип продукта
+	long count;         // Количество заказов с продуктом.
+	long price;         // Суммарная цена заказов.
 	struct list* next;  // Следующий узел списка.
 	struct list* prev;  // Предыдущий узел списказ.
 };
@@ -34,7 +34,7 @@ struct list
 // Динамический массив данных типа struct order.
 struct orders
 {
-	unsigned int count;  // Количество заказов еды.
+	unsigned int count;    // Количество заказов еды.
 	struct order* values;  // Массив заказов еды.
 };
 
@@ -510,9 +510,9 @@ static void menu(struct orders orders, struct list* sp)
 			case 8: match(orders);                      return;
 			case 9: match_one(orders);                  return;
 			case 10: print_orders(orders);              return;
-			case 11: exit(0);
+			case 11: exit(EXIT_SUCCESS);
 			}
-		case esc:    exit(0);
+		case esc:    exit(EXIT_SUCCESS);
 		}
 
 		if (y > last_option) y = first_option;
@@ -544,7 +544,7 @@ static void make_file(const char* path)
 		"ул_Пушкина_д9 суповой_набор 2024-11-11 100  400\n"
 		"ул_Ввод_д8    шоколад       2024-11-13 250  1250\n"
 		"ул_Кукина_д5  суши          2024-11-11 700  5000\n"
-	) < 0) exit(1);
+	) < 0) exit(EXIT_FAILURE);
 	fclose(file);
 }
 
@@ -565,7 +565,7 @@ int main(array<System::String^>^ args)
 			"для чтения: %s", path, strerror(errno)
 		);
 		(void)_getch();
-		exit(1);
+		exit(EXIT_FAILURE);
 	}
 
 	struct orders orders = {0};
@@ -577,14 +577,14 @@ int main(array<System::String^>^ args)
 			"количеством записей (положительное число)"
 		);
 		(void)_getch();
-		exit(1);
+		exit(EXIT_FAILURE);
 	}
 
 	if (orders.count == 0)
 	{
 		printf("\nошибка: количество записей не может быть нулевым");
 		(void)_getch();
-		exit(1);
+		exit(EXIT_FAILURE);
 	}
 
 	orders.values = (struct order*)malloc(sizeof(struct order) * orders.count);
@@ -600,7 +600,7 @@ int main(array<System::String^>^ args)
 				"(%u из %u)", i, orders.count
 			);
 			(void)_getch();
-			exit(1);
+			exit(EXIT_FAILURE);
 		}
 		if (fscanf(
 			file,
@@ -616,10 +616,10 @@ int main(array<System::String^>^ args)
 				"записана в некорректном формате", i + 1
 			);
 			(void)_getch();
-			exit(1);
+			exit(EXIT_FAILURE);
 		}
 		insert_order(&sp, orders.values[i]);
 	}
 
-	while (1) menu(orders, sp);
+	while (true) menu(orders, sp);
 }
