@@ -31,8 +31,6 @@ struct list
 	struct list* prev;  // Предыдущий узел списказ.
 };
 
-struct list* sp;  // Список заказов еды по типу.
-
 // Динамический массив данных типа struct order.
 struct orders
 {
@@ -213,15 +211,15 @@ struct list* create_list_node(struct order order)
 //
 // Аргументы:
 // order -> Заказ, который будет добавлен в список sp.
-void insert_order(struct order order)
+void insert_order(struct list** sp, struct order order)
 {
-	if (!sp)
+	if (!*sp)
 	{
-		sp = create_list_node(order);
+		*sp = create_list_node(order);
 		return;
 	}
 
-	struct list* node = sp;
+	struct list* node = *sp;
 	while (true)
 	{
 		int cmp = strcmp(order.kind, node->kind);
@@ -248,7 +246,7 @@ void insert_order(struct order order)
 			node->prev->next = node;
 			node->prev->prev = tmp;
 			if (tmp) tmp->next = node->prev;
-			if (sp->prev) sp = sp->prev;
+			if ((*sp)->prev) *sp = (*sp)->prev;
 			return;
 		}
 	}
@@ -258,7 +256,7 @@ void insert_order(struct order order)
 // Печатает в консоль (переписывает весь экран)
 // данные списка sp в алфавитном порядке 
 // (сортировка идет по типу заказа).
-void list_alpha()
+void list_alpha(struct list* sp)
 {
 	Console::ForegroundColor = ConsoleColor::Black;
 	Console::BackgroundColor = ConsoleColor::Gray;
@@ -270,7 +268,7 @@ void list_alpha()
 	for (struct list* nt = sp; nt != NULL; nt = nt->next)
 	{
 		printf(
-			"%\n\r%-20s %7ld шт. %7ld р.",
+			"\n\r%-20s %7ld шт. %7ld р.",
 			nt->kind,
 			nt->count,
 			nt->price
@@ -283,7 +281,7 @@ void list_alpha()
 // Печатает в консоль (переписывает весь экран)
 // данные списка sp в обратном алфавитном порядке
 // (сортировка идет по типу заказа).
-void list_alpha_reverse()
+void list_alpha_reverse(struct list* sp)
 {
 	Console::ForegroundColor = ConsoleColor::Black;
 	Console::BackgroundColor = ConsoleColor::Gray;
@@ -297,7 +295,7 @@ void list_alpha_reverse()
 	for (struct list* nt = tail; nt != NULL; nt = nt->prev)
 	{
 		printf(
-			"%\n\r%-20s %7ld шт. %7ld р.",
+			"\n\r%-20s %7ld шт. %7ld р.",
 			nt->kind,
 			nt->count,
 			nt->price
@@ -319,12 +317,12 @@ void print_expensive_list(struct orders orders)
 	Console::CursorLeft = 12;
 	printf("Список заказов на сумму более 1.000 руб");
 	printf("\n\r----------------------------------------------------------------");
-	for (int i = 0; i < orders.count; i++)
+	for (unsigned int i = 0; i < orders.count; i++)
 	{
 		if (orders.values[i].price > 1000)
 		{
 			printf(
-				"%\n\r%-20s %-20s %7ld г %7ld р.",
+				"\n\r%-20s %-20s %7ld г %7ld р.",
 				orders.values[i].address,
 				orders.values[i].kind,
 				orders.values[i].weight,
@@ -339,7 +337,7 @@ void print_expensive_list(struct orders orders)
 // Печатает в консоль (переписывает весь экран)
 // диаграмму по наиболее дорогим заказам,
 // основанную на данных списка sp.
-void diagram(struct orders orders)
+void diagram(struct orders orders, struct list* sp)
 {
 	Console::BackgroundColor = ConsoleColor::Yellow;
 	Console::Clear();
@@ -441,7 +439,7 @@ void match(struct orders orders)
 // Отрисовывает меню и позволяет выбрать 
 // одну из функций приложения при помощи
 // клавиатуры.
-void menu(struct orders orders)
+void menu(struct orders orders, struct list* sp)
 {
 	const char* options[] = {
 		"                                      ",
@@ -503,11 +501,11 @@ void menu(struct orders orders)
 			{
 			case 1: print_most_expensive_order(orders); return;
 			case 2: last_order(orders);                 return;
-			case 3: list_alpha();                 return;
-			case 4: list_alpha_reverse();         return;
+			case 3: list_alpha(sp);                     return;
+			case 4: list_alpha_reverse(sp);             return;
 			case 5: print_expensive_list(orders);       return;
 			case 6: print_pizza_order_count(orders);    return;
-			case 7: diagram(orders);                    return;
+			case 7: diagram(orders, sp);                return;
 			case 8: match(orders);                      return;
 			case 9: match_one(orders);                  return;
 			case 10: print_orders(orders);              return;
@@ -590,6 +588,7 @@ int main(array<System::String^>^ args)
 
 	orders.values = (struct order*)malloc(sizeof(struct order) * orders.count);
 	if (orders.values == NULL) abort();
+	struct list* sp = NULL;  // Список заказов еды по типу.
 	for (unsigned int i = 0; i < orders.count; i++)
 	{
 		if (feof(file))
@@ -618,8 +617,8 @@ int main(array<System::String^>^ args)
 			(void)_getch();
 			exit(1);
 		}
-		insert_order(orders.values[i]);
+		insert_order(&sp, orders.values[i]);
 	}
 
-	while (1) menu(orders);
+	while (1) menu(orders, sp);
 }
