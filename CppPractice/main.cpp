@@ -31,9 +31,14 @@ struct list
 	struct list* prev;  // Предыдущий узел списказ.
 };
 
-unsigned int count;  // Количество заказов еды.
-struct order* orders;  // Массив заказов еды.
 struct list* sp;  // Список заказов еды по типу.
+
+// Динамический массив данных типа struct order.
+struct orders
+{
+	unsigned int count;  // Количество заказов еды.
+	struct order* values;  // Массив заказов еды.
+};
 
 #define ENTER 13
 #define ESC   27
@@ -45,20 +50,20 @@ struct list* sp;  // Список заказов еды по типу.
 // Описание:
 // Печатает в консоль (переписывает весь экран)
 // данные массива orders.
-void print_orders()
+void print_orders(struct orders orders)
 {
 	Console::ForegroundColor = ConsoleColor::White;
 	Console::BackgroundColor = ConsoleColor::Black;
 	Console::Clear();
-	for (unsigned int i = 0; i < count; i++)
+	for (unsigned int i = 0; i < orders.count; i++)
 	{
 		printf(
 			"\n%-20s %-20s %11s %7ld %7ld",
-			orders[i].address,
-			orders[i].kind,
-			orders[i].date,
-			orders[i].weight,
-			orders[i].price
+			orders.values[i].address,
+			orders.values[i].kind,
+			orders.values[i].date,
+			orders.values[i].weight,
+			orders.values[i].price
 		);
 	}
 	(void)_getch();
@@ -67,14 +72,14 @@ void print_orders()
 // Описание:
 // Печатает в консоль (после курсора)
 // заказ с наибольшей ценой.
-void print_most_expensive_order()
+void print_most_expensive_order(struct orders orders)
 {
-	struct order* best = &orders[0];
-	for (unsigned int i = 1; i < count; i++)
+	struct order* best = &orders.values[0];
+	for (unsigned int i = 1; i < orders.count; i++)
 	{
-		if (best->price < orders[i].price)
+		if (best->price < orders.values[i].price)
 		{
-			best = &orders[i];
+			best = &orders.values[i];
 		}
 	}
 	Console::ForegroundColor = ConsoleColor::Yellow;
@@ -125,14 +130,14 @@ void to_pretty_date(char* to, const char* from)
 //
 // Если заказов с такой датой несколько, 
 // то печатает любой из них.
-void last_order()
+void last_order(struct orders orders)
 {
-	struct order* best = &orders[0];
-	for (unsigned int i = 0; i < count; i++)
+	struct order* best = &orders.values[0];
+	for (unsigned int i = 0; i < orders.count; i++)
 	{
-		if (strcmp(orders[i].date, best->date) < 0)
+		if (strcmp(orders.values[i].date, best->date) < 0)
 		{
-			best = &orders[i];
+			best = &orders.values[i];
 		}
 	}
 
@@ -156,12 +161,12 @@ void last_order()
 // Описание:
 // Печатает в консоль (после курсора)
 // количество заказов пиццы.
-void print_pizza_order_count()
+void print_pizza_order_count(struct orders orders)
 {
 	unsigned int total = 0;
-	for (unsigned int i = 0; i < count; i++)
+	for (unsigned int i = 0; i < orders.count; i++)
 	{
-		if (strcmp(orders[i].kind, "пицца") == 0) total++;
+		if (strcmp(orders.values[i].kind, "пицца") == 0) total++;
 	}
 
 	Console::ForegroundColor = ConsoleColor::Yellow;
@@ -305,7 +310,7 @@ void list_alpha_reverse()
 // Печатает в консоль (переписывает весь экран)
 // список заказов из массива orders, цена 
 // которых превышает 1000.
-void print_expensive_list()
+void print_expensive_list(struct orders orders)
 {
 	Console::ForegroundColor = ConsoleColor::Black;
 	Console::BackgroundColor = ConsoleColor::Gray;
@@ -314,16 +319,16 @@ void print_expensive_list()
 	Console::CursorLeft = 12;
 	printf("Список заказов на сумму более 1.000 руб");
 	printf("\n\r----------------------------------------------------------------");
-	for (int i = 0; i < count; i++)
+	for (int i = 0; i < orders.count; i++)
 	{
-		if (orders[i].price > 1000)
+		if (orders.values[i].price > 1000)
 		{
 			printf(
 				"%\n\r%-20s %-20s %7ld г %7ld р.",
-				orders[i].address,
-				orders[i].kind,
-				orders[i].weight,
-				orders[i].price
+				orders.values[i].address,
+				orders.values[i].kind,
+				orders.values[i].weight,
+				orders.values[i].price
 			);
 		}
 	}
@@ -334,14 +339,14 @@ void print_expensive_list()
 // Печатает в консоль (переписывает весь экран)
 // диаграмму по наиболее дорогим заказам,
 // основанную на данных списка sp.
-void diagram()
+void diagram(struct orders orders)
 {
 	Console::BackgroundColor = ConsoleColor::Yellow;
 	Console::Clear();
 	long total = 0;
-	for (unsigned int i = 0; i < count; i++)
+	for (unsigned int i = 0; i < orders.count; i++)
 	{
-		total += orders[i].price;
+		total += orders.values[i].price;
 	}
 
 	ConsoleColor color = ConsoleColor::Black;
@@ -372,19 +377,19 @@ void diagram()
 // первое совпадение цен заказа для
 // двух заказов из массива orders с 
 // разными типами.
-void match_one()
+void match_one(struct orders orders)
 {
 	Console::ForegroundColor = ConsoleColor::Yellow;
 	Console::BackgroundColor = ConsoleColor::Black;
 
 	struct order a, b;
 	bool found_match = false;
-	for (unsigned int i = 0; i < count; i++)
+	for (unsigned int i = 0; i < orders.count; i++)
 	{
-		for (unsigned int j = i + 1; j < count; j++)
+		for (unsigned int j = i + 1; j < orders.count; j++)
 		{
-			a = orders[i];
-			b = orders[j];
+			a = orders.values[i];
+			b = orders.values[j];
 			if (strcmp(a.kind, b.kind) == 0) continue;
 			if (a.price != b.price) continue;
 			found_match = true;
@@ -412,18 +417,18 @@ finish:
 // все совпадения цен заказа для
 // двух заказов из массива orders с 
 // разными типами.
-void match()
+void match(struct orders orders)
 {
 	Console::ForegroundColor = ConsoleColor::Black;
 	Console::BackgroundColor = ConsoleColor::Gray;
 	Console::Clear();
 	printf("Список продуктов с совпадающей ценой и разным типом:");
-	for (unsigned int i = 0; i < count; i++)
+	for (unsigned int i = 0; i < orders.count; i++)
 	{
-		for (unsigned int j = i + 1; j < count; j++)
+		for (unsigned int j = i + 1; j < orders.count; j++)
 		{
-			struct order a = orders[i];
-			struct order b = orders[j];
+			struct order a = orders.values[i];
+			struct order b = orders.values[j];
 			if (strcmp(a.kind, b.kind) == 0) continue;
 			if (a.price != b.price) continue;
 			printf("\r\n%-20s %-20s %7ld", a.kind, b.kind, a.price);
@@ -436,7 +441,7 @@ void match()
 // Отрисовывает меню и позволяет выбрать 
 // одну из функций приложения при помощи
 // клавиатуры.
-void menu()
+void menu(struct orders orders)
 {
 	const char* options[] = {
 		"                                      ",
@@ -496,16 +501,16 @@ void menu()
 		case ENTER:
 			switch (y)
 			{
-			case 1: print_most_expensive_order(); return;
-			case 2: last_order();                 return;
+			case 1: print_most_expensive_order(orders); return;
+			case 2: last_order(orders);                 return;
 			case 3: list_alpha();                 return;
 			case 4: list_alpha_reverse();         return;
-			case 5: print_expensive_list();       return;
-			case 6: print_pizza_order_count();    return;
-			case 7: diagram();                    return;
-			case 8: match();                      return;
-			case 9: match_one();                  return;
-			case 10: print_orders();              return;
+			case 5: print_expensive_list(orders);       return;
+			case 6: print_pizza_order_count(orders);    return;
+			case 7: diagram(orders);                    return;
+			case 8: match(orders);                      return;
+			case 9: match_one(orders);                  return;
+			case 10: print_orders(orders);              return;
 			case 11: exit(0);
 			}
 		case ESC:    exit(0);
@@ -516,6 +521,7 @@ void menu()
 	}
 }
 
+// Функция-помошник, чтобы удобно создавать файл с данными.
 void make_file(const char* path)
 {
 	FILE* file = fopen(path, "w");
@@ -563,7 +569,9 @@ int main(array<System::String^>^ args)
 		exit(1);
 	}
 
-	if (fscanf(file, "%u", &count) != 1)
+	struct orders orders = {0};
+
+	if (fscanf(file, "%u", &orders.count) != 1)
 	{
 		printf(
 			"\nошибка: файл должен начинаться "
@@ -573,23 +581,23 @@ int main(array<System::String^>^ args)
 		exit(1);
 	}
 
-	if (count == 0)
+	if (orders.count == 0)
 	{
 		printf("\nошибка: количество записей не может быть нулевым");
 		(void)_getch();
 		exit(1);
 	}
 
-	orders = (struct order*)malloc(sizeof(struct order) * count);
-	if (orders == NULL) abort();
-	for (unsigned int i = 0; i < count; i++)
+	orders.values = (struct order*)malloc(sizeof(struct order) * orders.count);
+	if (orders.values == NULL) abort();
+	for (unsigned int i = 0; i < orders.count; i++)
 	{
 		if (feof(file))
 		{
 			printf(
 				"\nошибка: файл содержит меньше записей, "
 				"чем объявлено в его заголовке "
-				"(%u из %u)", i, count
+				"(%u из %u)", i, orders.count
 			);
 			(void)_getch();
 			exit(1);
@@ -597,11 +605,11 @@ int main(array<System::String^>^ args)
 		if (fscanf(
 			file,
 			"%s%s%s%ld%ld",
-			orders[i].address,
-			orders[i].kind,
-			orders[i].date,
-			&orders[i].weight,
-			&orders[i].price) != 5)
+			orders.values[i].address,
+			orders.values[i].kind,
+			orders.values[i].date,
+			&orders.values[i].weight,
+			&orders.values[i].price) != 5)
 		{
 			printf(
 				"\nошибка: запись номер %u повреждена или "
@@ -610,8 +618,8 @@ int main(array<System::String^>^ args)
 			(void)_getch();
 			exit(1);
 		}
-		insert_order(orders[i]);
+		insert_order(orders.values[i]);
 	}
 
-	while (1) menu();
+	while (1) menu(orders);
 }
